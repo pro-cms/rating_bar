@@ -1,8 +1,8 @@
-# rating_bar
+# rating_bar_updated
 
 A customizable *Rating Bar* for flutter with half rating support
 
-[![pub package](https://img.shields.io/pub/v/rating_bar.svg?style=popout)](https://pub.dartlang.org/packages/rating_bar)
+[![pub package](https://img.shields.io/pub/v/rating_bar_updated.svg?style=popout)](https://pub.dartlang.org/packages/rating_bar_updated)
 
 ## Installation
 
@@ -11,14 +11,14 @@ Add this to your package's pubspec.yaml file
 ```yaml
 dependencies:
   ...
-  rating_bar: ^latest.version.here
+  rating_bar_updated: ^latest.version.here
 ```
 
 ## Usage
 First import paging.dart
 
 ```dart
-  import 'package:rating_bar/rating_bar.dart';
+  import 'package:rating_bar_updated/rating_bar_updated.dart';
 ```
 `onRatingChanged` callback returns current rating which is a double,
 when the rating has changed.
@@ -56,4 +56,4 @@ You can also use read-only rating bar widget
 <image src="https://raw.github.com/joshmatta/rating_bar/master/flutter_01.png" width="350px"/>
 
 ## License
-[MIT License](https://github.com/joshmatta/rating_bar/blob/master/LICENSE)
+[MIT License](https://github.com/pro-cms/rating_bar/blob/master/LICENSE)

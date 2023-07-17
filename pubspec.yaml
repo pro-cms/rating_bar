@@ -1,11 +1,11 @@
-name: rating_bar
+name: rating_bar_updated
 description: A customizable Rating Bar for flutter with half rating support
 version: 0.2.0
-author: Joshua Matta<joshuamatta1996@gmail.com>
-homepage: https://github.com/joshmatta/rating_bar
+author: Zepson Technologies <novath@zepsn.co.tz>
+homepage: https://github.com/pro-cms/rating_bar
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.1.0 <3.7.0"
 
 dependencies:
   flutter:
