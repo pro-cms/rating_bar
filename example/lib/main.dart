@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rating_bar/rating_bar.dart';
+import 'package:rating_bar_updated/rating_bar_updated.dart';
 
 void main() => runApp(MyApp());
 

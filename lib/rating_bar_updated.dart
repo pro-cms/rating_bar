@@ -1,8 +1,8 @@
-library rating_bar;
+library rating_bar_updated;
 
 import 'package:flutter/material.dart';
 
-typedef RatingChangeCallback = void Function(double rating);
+typedef RatingCallback = void Function(double rating);
 
 class RatingBar extends StatefulWidget {
   RatingBar({
@@ -36,14 +36,14 @@ class RatingBar extends StatefulWidget {
     this.halfFilledColor,
     this.size = 40,
   })  : _readOnly = true,
-        onRatingChanged = (_) {},
+        onRatingChanged = null,
         super(key: key);
 
   final int maxRating;
   final IconData filledIcon;
   final IconData emptyIcon;
   final IconData? halfFilledIcon;
-  final RatingChangeCallback onRatingChanged;
+  final RatingCallback? onRatingChanged;
   final double initialRating;
   final Color? filledColor;
   final Color emptyColor;
@@ -54,17 +54,19 @@ class RatingBar extends StatefulWidget {
   final bool _readOnly;
 
   @override
-  _RatingBarState createState() => _RatingBarState();
+  _RatingBarState createState() {
+    return _RatingBarState();
+  }
 }
 
 class _RatingBarState extends State<RatingBar> {
-  double _currentRating = 0;
-  Alignment _algins = Alignment.centerLeft;
+  late double _currentRating;
+  late Alignment _aligns;
 
   @override
   void initState() {
     super.initState();
-    _algins = widget.aligns;
+    _aligns = widget.aligns;
     _currentRating = widget.isHalfAllowed
         ? widget.initialRating
         : widget.initialRating.roundToDouble();
@@ -73,10 +75,10 @@ class _RatingBarState extends State<RatingBar> {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: _algins,
+      alignment: _aligns,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: List<Widget>.generate(widget.maxRating, (index) {
+        children: List.generate(widget.maxRating, (index) {
           return Builder(
             builder: (rowContext) => widget._readOnly
                 ? buildIcon(context, index + 1)
@@ -89,17 +91,21 @@ class _RatingBarState extends State<RatingBar> {
 
   Widget buildIcon(BuildContext context, int position) {
     IconData? iconData;
-    Color? color;
-    double rating = widget._readOnly
-        ? (widget.isHalfAllowed
-            ? widget.initialRating
-            : widget.initialRating.roundToDouble())
-        : _currentRating;
+    Color color;
+    double rating;
+
+    if (widget._readOnly) {
+      rating = widget.isHalfAllowed
+          ? widget.initialRating
+          : widget.initialRating.roundToDouble();
+    } else {
+      rating = _currentRating;
+    }
 
     if (position > rating + 0.5) {
       iconData = widget.emptyIcon;
       color = widget.emptyColor;
-    } else if (position == rating + 0.5) {
+    } else if (position == rating + 0.5 && widget.halfFilledIcon != null) {
       iconData = widget.halfFilledIcon;
       color = widget.halfFilledColor ??
           widget.filledColor ??
@@ -116,7 +122,7 @@ class _RatingBarState extends State<RatingBar> {
       child: buildIcon(context, position),
       onTap: () {
         setState(() => _currentRating = position.toDouble());
-        widget.onRatingChanged(_currentRating);
+        widget.onRatingChanged?.call(_currentRating);
       },
       onHorizontalDragUpdate: (details) {
         RenderBox renderBox = context.findRenderObject() as RenderBox;
@@ -134,7 +140,7 @@ class _RatingBarState extends State<RatingBar> {
         }
         if (_currentRating != rating) {
           setState(() => _currentRating = rating);
-          widget.onRatingChanged(_currentRating);
+          widget.onRatingChanged?.call(_currentRating);
         }
       },
     );
