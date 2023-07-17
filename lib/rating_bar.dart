@@ -2,15 +2,15 @@ library rating_bar;
 
 import 'package:flutter/material.dart';
 
-typedef void RatingCallback(double rating);
+typedef RatingChangeCallback = void Function(double rating);
 
 class RatingBar extends StatefulWidget {
   RatingBar({
-    Key key,
+    Key? key,
     this.maxRating = 5,
-    @required this.onRatingChanged,
-    @required this.filledIcon,
-    @required this.emptyIcon,
+    required this.onRatingChanged,
+    required this.filledIcon,
+    required this.emptyIcon,
     this.halfFilledIcon,
     this.isHalfAllowed = false,
     this.aligns = Alignment.centerLeft,
@@ -20,20 +20,13 @@ class RatingBar extends StatefulWidget {
     this.halfFilledColor,
     this.size = 40,
   })  : _readOnly = false,
-        assert(maxRating != null),
-        assert(initialRating != null),
-        assert(filledIcon != null),
-        assert(emptyIcon != null),
-        assert(isHalfAllowed != null),
-        assert(!isHalfAllowed || halfFilledIcon != null),
-        assert(size != null),
         super(key: key);
 
   RatingBar.readOnly({
-    Key key,
+    Key? key,
     this.maxRating = 5,
-    @required this.filledIcon,
-    @required this.emptyIcon,
+    required this.filledIcon,
+    required this.emptyIcon,
     this.halfFilledIcon,
     this.isHalfAllowed = false,
     this.aligns = Alignment.centerLeft,
@@ -43,48 +36,38 @@ class RatingBar extends StatefulWidget {
     this.halfFilledColor,
     this.size = 40,
   })  : _readOnly = true,
-        onRatingChanged = null,
-        assert(maxRating != null),
-        assert(initialRating != null),
-        assert(filledIcon != null),
-        assert(emptyIcon != null),
-        assert(isHalfAllowed != null),
-        assert(!isHalfAllowed || halfFilledIcon != null),
-        assert(size != null),
+        onRatingChanged = (_) {},
         super(key: key);
 
   final int maxRating;
   final IconData filledIcon;
   final IconData emptyIcon;
-  final IconData halfFilledIcon;
-  final RatingCallback onRatingChanged;
+  final IconData? halfFilledIcon;
+  final RatingChangeCallback onRatingChanged;
   final double initialRating;
-  final Color filledColor;
+  final Color? filledColor;
   final Color emptyColor;
-  final Color halfFilledColor;
+  final Color? halfFilledColor;
   final double size;
   final bool isHalfAllowed;
   final Alignment aligns;
   final bool _readOnly;
 
   @override
-  _RatingBarState createState() {
-    return _RatingBarState();
-  }
+  _RatingBarState createState() => _RatingBarState();
 }
 
 class _RatingBarState extends State<RatingBar> {
-  double _currentRating;
-  Alignment _algins;
+  double _currentRating = 0;
+  Alignment _algins = Alignment.centerLeft;
+
   @override
   void initState() {
     super.initState();
     _algins = widget.aligns;
-    if (widget.isHalfAllowed) {
-      _currentRating = widget.initialRating;
-    } else {
-      _currentRating = widget.initialRating.roundToDouble();
-    }
+    _currentRating = widget.isHalfAllowed
+        ? widget.initialRating
+        : widget.initialRating.roundToDouble();
   }
 
   @override
@@ -93,7 +76,7 @@ class _RatingBarState extends State<RatingBar> {
       alignment: _algins,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(widget.maxRating, (index) {
+        children: List<Widget>.generate(widget.maxRating, (index) {
           return Builder(
             builder: (rowContext) => widget._readOnly
                 ? buildIcon(context, index + 1)
@@ -105,21 +88,17 @@ class _RatingBarState extends State<RatingBar> {
   }
 
   Widget buildIcon(BuildContext context, int position) {
-    IconData iconData;
-    Color color;
-    double rating;
-    if (widget._readOnly) {
-      if (widget.isHalfAllowed) {
-        rating = widget.initialRating;
-      } else {
-        rating = widget.initialRating.roundToDouble();
-      }
-    } else {
-      rating = _currentRating;
-    }
+    IconData? iconData;
+    Color? color;
+    double rating = widget._readOnly
+        ? (widget.isHalfAllowed
+            ? widget.initialRating
+            : widget.initialRating.roundToDouble())
+        : _currentRating;
+
     if (position > rating + 0.5) {
       iconData = widget.emptyIcon;
-      color = widget.emptyColor ?? Colors.grey;
+      color = widget.emptyColor;
     } else if (position == rating + 0.5) {
       iconData = widget.halfFilledIcon;
       color = widget.halfFilledColor ??
@@ -137,10 +116,10 @@ class _RatingBarState extends State<RatingBar> {
       child: buildIcon(context, position),
       onTap: () {
         setState(() => _currentRating = position.toDouble());
-        widget?.onRatingChanged(_currentRating);
+        widget.onRatingChanged(_currentRating);
       },
       onHorizontalDragUpdate: (details) {
-        RenderBox renderBox = context.findRenderObject();
+        RenderBox renderBox = context.findRenderObject() as RenderBox;
         var localPosition = renderBox.globalToLocal(details.globalPosition);
         var rating = localPosition.dx / widget.size;
 
@@ -155,7 +134,7 @@ class _RatingBarState extends State<RatingBar> {
         }
         if (_currentRating != rating) {
           setState(() => _currentRating = rating);
-          widget?.onRatingChanged(_currentRating);
+          widget.onRatingChanged(_currentRating);
         }
       },
     );
